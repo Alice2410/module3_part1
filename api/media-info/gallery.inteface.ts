@@ -8,26 +8,32 @@
 import { ObjectId } from "mongodb";
 import { Stats } from "fs";
 
-export interface UserLog {
+interface UserLog {
   _id?: ObjectId,
   email: string;
   password: string;
   salt: string;
 }
 
-export interface ResponseObject {
+interface ResponseObject {
   objects: object[];
   page: number;
   total: number;
 }
 
-export interface ImageInterface {
+interface ImageInterface {
   id: string;
   path: string;
   metadata: Stats;
   owner?: string;
 }
 
-export interface ValidUser {
+interface ValidUser {
   [key: string]: string;
+}
+
+export interface QueryParameters {
+  page: string;
+  limit: string;
+  filter: string;
 }

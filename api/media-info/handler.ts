@@ -1,10 +1,12 @@
 import { errorHandler } from '@helper/http-api/error-handler';
-import { createResponse } from '@helper/http-api/response';
 import { log } from '@helper/logger';
-import { MediaInfoCurlService } from '@services/media-info-curl.service';
 import { APIGatewayProxyHandlerV2 } from 'aws-lambda';
-import { MediaInfoUrl } from './media-info.inteface';
-import { MediaInfoManager } from './media-info.manager';
+import { QueryParameters } from './gallery.inteface';
+// import { createResponse } from '@helper/http-api/response';
+// import { MediaInfoCurlService } from '@services/media-info-curl.service';
+// import { MediaInfoUrl } from './media-info.inteface';
+// import { MediaInfoManager } from './media-info.manager';
+// import { Handler } from 'aws-lambda/handler';
 
 /**
  * It's required if you use any external executable files like mediainfo-curl
@@ -35,31 +37,35 @@ if (process.env.LAMBDA_TASK_ROOT) {
  * @param context
  */
 
-export const getMediaInfo: APIGatewayProxyHandlerV2 = async (event, context) => {
+export const getGallery: APIGatewayProxyHandlerV2 = async (event, context) => {
   log(event);
 
   try {
-    /**
-     * Create the manager object
-     */
-    const manager = new MediaInfoManager();
+    const manager = new GalleryManager();
+    const queryParams = event.queryStringParameters as unknown as QueryParameters;
+ 
+    return await manager.getImages(queryParams);
+    // /**
+    //  * Create the manager object
+    //  */
+    // const manager = new MediaInfoManager();
 
-    /**
-     * Prepare required data
-     */
-    const mediaInfoUrl: MediaInfoUrl = JSON.parse(event.body!);
+    // /**
+    //  * Prepare required data
+    //  */
+    // const mediaInfoUrl: MediaInfoUrl = JSON.parse(event.body!);
 
-    /**
-     * Prepare required services
-     */
-    const mediaInfoCurlService = new MediaInfoCurlService();
+    // /**
+    //  * Prepare required services
+    //  */
+    // const mediaInfoCurlService = new MediaInfoCurlService();
 
-    /**
-     * Call the manager's method
-     */
-    const result = await manager.getMediaInfo(mediaInfoUrl, mediaInfoCurlService);
+    // /**
+    //  * Call the manager's method
+    //  */
+    // const result = await manager.getMediaInfo(mediaInfoUrl, mediaInfoCurlService);
 
-    return createResponse(200, result);
+    // return createResponse(200, result);
   } catch (e) {
     /**
      * Handle all errors
