@@ -1,6 +1,12 @@
-// import { HttpBadRequestError, HttpInternalServerError } from '@floteam/errors';
+import { HttpBadRequestError, HttpInternalServerError } from '@floteam/errors';
 // import { MediaInfoCurlService, Track } from '@services/media-info-curl.service';
 import { connectToDB } from "@services/connectToDB.service";
+import { ObjectId } from "mongodb";
+import { ResponseObject } from "./gallery.inteface";
+import { getArrayLength } from "@services/count-images.service";
+import { checkPage } from "@services/check-page.service";
+import { getImages } from "@services/get-images.service";
+import { getId } from '@services/get-id.services';
 
 /**
  * It's the feature service
@@ -33,5 +39,39 @@ import { connectToDB } from "@services/connectToDB.service";
 // }
 
 export class GalleryService {
-  a
+  async getImages(pageNumber: number, limitNumber: number, filter: string, userEmail: string) {
+    let responseGalleryObj: ResponseObject = {
+      objects: [],
+      page: 0,
+      total: 0,
+    }
+
+    const userId: ObjectId = await getId(userEmail);
+
+    try {
+      const allImagesNumber = await getArrayLength(userId, filter);
+      const total = await getTotal(limitNumber, allImagesNumber);
+      const page = checkPage(pageNumber, total);
+
+      if (page) {
+        const objects = await getImages(filter, page, limitNumber, userId)
+
+        responseGalleryObj.objects = objects;
+        responseGalleryObj.page = page;
+        responseGalleryObj.total = total;
+
+        return responseGalleryObj;
+
+      } else {
+        throw new HttpBadRequestError(`Страницы не существует`)
+      }
+    } catch(e) {
+      if (e instanceof HttpBadRequestError){
+        throw new HttpBadRequestError(e.message); 
+      } 
+
+      throw new HttpInternalServerError(e.message);
+    }
+    
+  }
 }

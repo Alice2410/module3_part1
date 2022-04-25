@@ -103,6 +103,7 @@
     "dotenv": "16.0.0",
     "dynamoose": "^2.8.3",
     "mongodb": "^4.5.0",
+    "mongoose": "^6.3.1",
     "nodemailer": "^6.7.2",
     "reflect-metadata": "^0.1.13",
     "sequelize": "^6.12.2",

@@ -8,14 +8,14 @@
 import { ObjectId } from "mongodb";
 import { Stats } from "fs";
 
-interface UserLog {
+export interface UserLog {
   _id?: ObjectId,
   email: string;
   password: string;
   salt: string;
 }
 
-interface ResponseObject {
+export interface ResponseObject {
   objects: object[];
   page: number;
   total: number;

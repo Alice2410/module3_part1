@@ -1,7 +1,9 @@
 import { errorHandler } from '@helper/http-api/error-handler';
+import { createResponse } from '@helper/http-api/response';
 import { log } from '@helper/logger';
 import { APIGatewayProxyHandlerV2 } from 'aws-lambda';
 import { QueryParameters } from './gallery.inteface';
+import { GalleryManager } from './gallery.manager';
 // import { createResponse } from '@helper/http-api/response';
 // import { MediaInfoCurlService } from '@services/media-info-curl.service';
 // import { MediaInfoUrl } from './media-info.inteface';
@@ -43,33 +45,19 @@ export const getGallery: APIGatewayProxyHandlerV2 = async (event, context) => {
   try {
     const manager = new GalleryManager();
     const queryParams = event.queryStringParameters as unknown as QueryParameters;
- 
-    return await manager.getImages(queryParams);
-    // /**
-    //  * Create the manager object
-    //  */
-    // const manager = new MediaInfoManager();
+    const userId = event.requestContext.authorizer?.jwt.claims.email as string;
 
+    const result = await manager.getImages(queryParams, userId);
+
+    return createResponse(200, result);
+ 
+    
     // /**
     //  * Prepare required data
     //  */
     // const mediaInfoUrl: MediaInfoUrl = JSON.parse(event.body!);
-
-    // /**
-    //  * Prepare required services
-    //  */
-    // const mediaInfoCurlService = new MediaInfoCurlService();
-
-    // /**
-    //  * Call the manager's method
-    //  */
-    // const result = await manager.getMediaInfo(mediaInfoUrl, mediaInfoCurlService);
-
     // return createResponse(200, result);
   } catch (e) {
-    /**
-     * Handle all errors
-     */
     return errorHandler(e);
   }
 };
