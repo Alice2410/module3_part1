@@ -1,6 +1,6 @@
 import { HttpBadRequestError, HttpInternalServerError } from '@floteam/errors';
 // import { MediaInfoCurlService, Track } from '@services/media-info-curl.service';
-import { connectToDB } from "@services/connectToDB.service";
+import { connectToDB } from "@services/connect-to-DB.service";
 import { ObjectId } from "mongodb";
 import { ResponseObject } from "./gallery.inteface";
 import { getArrayLength } from "@services/count-images.service";
@@ -49,6 +49,8 @@ export class GalleryService {
     const userId: ObjectId = await getId(userEmail);
 
     try {
+      await connectToDB;
+
       const allImagesNumber = await getArrayLength(userId, filter);
       const total = await getTotal(limitNumber, allImagesNumber);
       const page = checkPage(pageNumber, total);

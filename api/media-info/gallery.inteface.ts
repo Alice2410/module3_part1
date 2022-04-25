@@ -21,7 +21,7 @@ export interface ResponseObject {
   total: number;
 }
 
-interface ImageInterface {
+export interface ImageInterface {
   id: string;
   path: string;
   metadata: Stats;
