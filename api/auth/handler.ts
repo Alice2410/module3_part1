@@ -5,6 +5,7 @@ import {
   APIGatewayProxyHandlerV2,
   APIGatewayTokenAuthorizerWithContextHandler
 } from "aws-lambda";
+import { AuthorizationManager } from './auth.manager';
 
 export const signUp: APIGatewayProxyHandlerV2 = async(event, context) => {
   try {
