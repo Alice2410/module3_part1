@@ -10,13 +10,16 @@ import { AuthorizationManager } from './auth.manager';
 export const signUp: APIGatewayProxyHandlerV2 = async(event, context) => {
   try {
     const manager = new AuthorizationManager();
-    
-    if (event.body) {
-      const response = await manager.signUp(event.body);
+  
+    if (!event.body) {
+      throw new Error('Нет пользовательских данных')
+    } 
+    const response = await manager.signUp(event.body);
 
-      return createResponse(200, response);
-    }
+    return createResponse(200, response);
   } catch (e) {
+
     return errorHandler(e);
   }
+
 }
