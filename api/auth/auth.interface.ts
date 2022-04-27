@@ -4,7 +4,8 @@ export interface ValidUser {
 
 export interface UserData {
   email: string,
-  password: string
+  password: string,
+  salt: string,
 }
 
 export interface HashedPassword {

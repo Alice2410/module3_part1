@@ -16,13 +16,11 @@ export async function hashPassword (password: string) {
   return hash;
 }
 
-// export async function comparePasswords (data: string, salt: string, barePassword: string) {
-//   const hashedUserPassword = await scryptAsync(barePassword, salt, 64);
-//   const isValid = `${salt}${hashedUserPassword.toString('hex')}` === data
+export async function comparePasswords (password: string, correctData: string, salt: string) {
+  const hashedUserPassword = await scryptAsync(password, salt, 64);
+  const isValid = (salt + hashedUserPassword.toString('hex')) === correctData;
 
-//     if (!isValid) {
-//       throw new Error('Invalid password');
-//     }
-// }
+  return isValid;
+}
 
 

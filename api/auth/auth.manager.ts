@@ -28,4 +28,10 @@ export class AuthorizationManager {
 
     return this.service.signUp(userObject);
   }
+
+  logIn (userData: string) {
+    const userObject = this.validateUserData(userData, false);
+    
+    return this.service.logIn(userObject);
+  }
 }

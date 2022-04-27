@@ -21,5 +21,20 @@ export const signUp: APIGatewayProxyHandlerV2 = async(event, context) => {
 
     return errorHandler(e);
   }
+}
 
+export const logIn: APIGatewayProxyHandlerV2 = async (event, context) => {
+  try{
+    const manager = new AuthorizationManager();
+
+    if (!event.body) {
+      throw new Error('Нет пользовательских данных')
+    } 
+
+    const token = await manager.logIn(event.body);
+    
+    return createResponse(200, {token});
+  } catch(e) {
+    return errorHandler(e);
+  }
 }
