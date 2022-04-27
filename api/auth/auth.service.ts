@@ -28,7 +28,7 @@ export class AuthorizationService {
         return token;
       }
     } catch(e) {
-
+      throw new Error(e.message);
     }
   }
   

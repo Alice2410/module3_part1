@@ -32,9 +32,10 @@ export const logIn: APIGatewayProxyHandlerV2 = async (event, context) => {
     } 
 
     const token = await manager.logIn(event.body);
-    
+
     return createResponse(200, {token});
   } catch(e) {
     return errorHandler(e);
   }
 }
+
