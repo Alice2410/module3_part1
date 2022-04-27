@@ -28,10 +28,6 @@ export interface ImageInterface {
   owner?: string;
 }
 
-interface ValidUser {
-  [key: string]: string;
-}
-
 export interface QueryParameters {
   page: string;
   limit: string;
