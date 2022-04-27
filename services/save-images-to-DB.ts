@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb";
-import { ImageInterface } from 'api/media-info/gallery.inteface';
+import { ImageInterface } from 'api/gallery/gallery.inteface';
 import { getMetadata } from './get-metadata.services';
 import { Image } from '@models/MongoDB/image';
 import { getImagesArr } from './get-paths.services';
