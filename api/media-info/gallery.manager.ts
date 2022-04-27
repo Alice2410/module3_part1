@@ -1,9 +1,11 @@
 // import { MediaInfoCurlService, Track } from '@services/media-info-curl.service';
-// import { HttpBadRequestError } from '@floteam/errors';
+import { HttpBadRequestError } from '@floteam/errors';
 // import { MediaInfoService } from './media-info.service';
+// import { ObjectId } from "mongodb";
 import { QueryParameters } from './gallery.inteface';
 import { ResponseObject } from './gallery.inteface';
 import { GalleryService } from './gallery.service';
+import { MultipartRequest } from 'lambda-multipart-parser';
 /**
  * It's the feature manager
  * Its methods should implement some feature's functionality
@@ -33,6 +35,15 @@ export class GalleryManager {
     const limitNumber = +limit;
 
     return this.service.getImages(pageNumber, limitNumber, filter, userEmail);
+  }
+
+  async uploadImages(imagesArr: MultipartRequest, userEmail: string) {
+    // if (imagesArr.files.length === 0) {
+    //   throw new HttpBadRequestError('Изображения не были добавлены');
+    // }
+    const file = imagesArr.files[0]
+
+    return this.service.uploadImage(file, userEmail);
   }
   /**
    * This method implements some feature's functionality

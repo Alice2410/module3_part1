@@ -2,8 +2,11 @@ import { errorHandler } from '@helper/http-api/error-handler';
 import { createResponse } from '@helper/http-api/response';
 import { log } from '@helper/logger';
 import { APIGatewayProxyHandlerV2 } from 'aws-lambda';
+import { APIGatewayProxyHandler } from 'aws-lambda';
 import { QueryParameters } from './gallery.inteface';
 import { GalleryManager } from './gallery.manager';
+import { MultipartRequest } from 'lambda-multipart-parser';
+import * as parser from 'lambda-multipart-parser';
 // import { createResponse } from '@helper/http-api/response';
 // import { MediaInfoCurlService } from '@services/media-info-curl.service';
 // import { MediaInfoUrl } from './media-info.inteface';
@@ -45,18 +48,26 @@ export const getGallery: APIGatewayProxyHandlerV2 = async (event, context) => {
   try {
     const manager = new GalleryManager();
     const queryParams = event.queryStringParameters as unknown as QueryParameters;
-    const userId = event.requestContext.authorizer?.jwt.claims.email as string;
-
-    const result = await manager.getImages(queryParams, userId);
+    const userEmail = event.requestContext.authorizer?.jwt.claims.email as string;
+    const result = await manager.getImages(queryParams, userEmail);
 
     return createResponse(200, result);
- 
-    
-    // /**
-    //  * Prepare required data
-    //  */
-    // const mediaInfoUrl: MediaInfoUrl = JSON.parse(event.body!);
-    // return createResponse(200, result);
+  } catch (e) {
+    return errorHandler(e);
+  }
+};
+
+export const addImageGallery: APIGatewayProxyHandler = async (event) => {
+  log(event);
+
+  try {
+    const manager = new GalleryManager();
+    const images: MultipartRequest = await parser.parse(event);
+    const ownerId: string = event.requestContext.authorizer?.claims._id;
+
+    const result = await manager.uploadImages(images, ownerId);
+
+    return createResponse(200, result);
   } catch (e) {
     return errorHandler(e);
   }

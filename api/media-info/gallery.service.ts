@@ -5,8 +5,12 @@ import { ObjectId } from "mongodb";
 import { ResponseObject } from "./gallery.inteface";
 import { getArrayLength } from "@services/count-images.service";
 import { checkPage } from "@services/check-page.service";
-import { getImages } from "@services/get-images.service";
+import { getImages } from "@services/get-images-for-page.service";
 import { getId } from '@services/get-id.services';
+import { MultipartFile, MultipartRequest } from 'lambda-multipart-parser';
+import { Image } from '@models/MongoDB/image';
+import { saveImageLocal } from '@services/get-image-name';
+import { saveImagesToDB } from '@services/save-images-to-DB';
 
 /**
  * It's the feature service
@@ -74,6 +78,21 @@ export class GalleryService {
 
       throw new HttpInternalServerError(e.message);
     }
-    
+  }
+
+  async uploadImage(image: MultipartFile, userEmail: string) {
+    const userId: ObjectId = await getId(userEmail);
+
+    try {
+      await connectToDB;
+      
+      const fileName = await saveImageLocal(userId, image);
+      await saveImagesToDB(fileName, userId);
+
+    } catch (e) {
+      throw new HttpInternalServerError(e.message);
+    }
+
+    return 'Изображение загружено';
   }
 }
