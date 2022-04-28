@@ -12,3 +12,7 @@ export interface HashedPassword {
   password: string,
   salt: string
 }
+
+export interface jwtToken {
+  email: string
+}

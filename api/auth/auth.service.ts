@@ -1,5 +1,5 @@
 import { UserData } from "./auth.interface";
-import { connectToDB } from "@services/connect-to-DB.service";
+import { addDefaultUserData, connectToDB } from "@services/connect-to-DB.service";
 import { addNewUser } from "@services/add-user-to-DB.service";
 import { checkUser } from "@services/check-user-data.service";
 import jwt from "jsonwebtoken";
@@ -8,12 +8,14 @@ import {
   HttpUnauthorizedError,
   HttpInternalServerError,
   AlreadyExistsError
- } from '@floteam/errors';
+} from '@floteam/errors';
+
+const tokenKey = process.env.TOKEN_KEY as string;
 
 export class AuthorizationService {
   async signUp(userData: UserData) {
     try {
-      await connectToDB;
+      await connectToDB();
       const newUser = await addNewUser(userData);
       if (!newUser) {
         throw new AlreadyExistsError('Пользователь существует')
@@ -22,17 +24,17 @@ export class AuthorizationService {
 
       return true;
     } catch(e) {
-      throw new HttpInternalServerError('Новый пользователь не добавлен')
+      throw new AlreadyExistsError('Новый пользователь не добавлен')
     }
   }
 
   async logIn(userData: UserData) {
     try {
-      await connectToDB;
+      await connectToDB();
       const isValid = await checkUser(userData);
 
       if (isValid) {
-        const tokenKey = process.env.TOKEN_KEY as string;
+        
         let token = jwt.sign({sub: userData.email}, tokenKey);
 
         return token;
@@ -40,7 +42,30 @@ export class AuthorizationService {
         throw new HttpUnauthorizedError('Пользователь неавторизован')
       }
     } catch(e) {
-      throw new HttpInternalServerError('Ошибка логина')
+      throw new HttpUnauthorizedError('Ошибка логина')
+    }
+  }
+
+  async uploadDefaultUsers () {
+    try {
+      await connectToDB();
+
+      let user = await addNewUser();
+      console.log(user);
+
+      return 'Пользователи добавлены';
+    } catch (err) {
+      throw new HttpInternalServerError('Пользователи не были добавлены');
+    }
+  }
+
+  async authenticate(token: string) {
+    try {
+      await connectToDB;
+
+      return jwt.verify(token, tokenKey);
+    } catch (err) {
+      throw new HttpUnauthorizedError('Невалидный токен')
     }
   }
 }

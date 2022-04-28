@@ -65,9 +65,9 @@ export const addImageGallery: APIGatewayProxyHandler = async (event) => {
   try {
     const manager = new GalleryManager();
     const images: MultipartRequest = await parser.parse(event);
-    const ownerId: string = event.requestContext.authorizer?.claims._id;
+    const ownerEmail: string = event.requestContext.authorizer?.claims.email;
 
-    const result = await manager.uploadImages(images, ownerId);
+    const result = await manager.uploadImages(images, ownerEmail);
 
     return createResponse(200, result);
   } catch (e) {

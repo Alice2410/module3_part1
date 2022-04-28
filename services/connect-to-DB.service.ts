@@ -9,25 +9,36 @@ import {
   HttpInternalServerError,
   AlreadyExistsError
  } from '@floteam/errors';
+import { addNewUser } from './add-user-to-DB.service';
 
-const dbURL = getEnv('MONGO', true);
+const dbURL = getEnv('DB_CONN', true);
 
-export const connectToDB = new Promise((resolve, reject) => {
+export async function addDefaultUserData() {
   try {
     const isConnected = mongoose.connection;
 
     isConnected.on('error', (error) => {
       log(error);
-      reject(error);
+      throw new HttpInternalServerError(error.message)
     });
 
     isConnected.on('open', async () => {
       log('Connection to DB is successfully established.');
-      
-      await saveImagesToDB(path);
-      resolve(isConnected);
+
+      await addNewUser();
+      // await saveImagesToDB(path);
     });
+
   } catch(e) {
     throw new HttpInternalServerError('Ошибка подключения к базе данных')
   }
-});
+}
+
+export async function connectToDB() {
+  try {
+    const connection = await mongoose.connect(dbURL);
+    console.log('connected to db');
+  } catch(e) {
+    throw new HttpInternalServerError('Ошибка подключения к базе данных')
+  }
+}

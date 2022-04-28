@@ -1,6 +1,11 @@
 import { UserData } from "./auth.interface";
-import { HttpBadRequestError } from '@floteam/errors';
 import { AuthorizationService } from "./auth.service";
+import { 
+  HttpBadRequestError,
+  HttpUnauthorizedError,
+  HttpInternalServerError,
+  AlreadyExistsError
+ } from '@floteam/errors';
 
 export class AuthorizationManager {
   private readonly service: AuthorizationService;
@@ -33,5 +38,17 @@ export class AuthorizationManager {
     const userObject = this.validateUserData(userData, false);
 
     return this.service.logIn(userObject);
+  }
+
+  uploadDefaultUsers = async () => {
+    return this.service.uploadDefaultUsers();
+  }
+
+  authenticate = async (token: string) => {
+    if (!token) {
+      throw new HttpUnauthorizedError('Токен не найден')
+    }
+
+    return this.service.authenticate(token);
   }
 }

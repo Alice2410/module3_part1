@@ -3,15 +3,18 @@ import { createResponse } from '@helper/http-api/response';
 import {
   APIGatewayAuthorizerResult,
   APIGatewayProxyHandlerV2,
-  APIGatewayTokenAuthorizerWithContextHandler
+  APIGatewayTokenAuthorizerWithContextHandler,
+  Handler
 } from "aws-lambda";
 import { AuthorizationManager } from './auth.manager';
+import { jwtToken } from './auth.interface';
 import { 
   HttpBadRequestError,
   HttpUnauthorizedError,
   HttpInternalServerError,
   AlreadyExistsError
  } from '@floteam/errors';
+ import { APIGatewayAuthorizerSimpleResult, APIGatewayRequestAuthorizerHttpApiPayloadV2Event } from "@interfaces/api-gateway-authorizer.interface";
 
 
 export const signUp: APIGatewayProxyHandlerV2 = async(event, context) => {
@@ -44,4 +47,50 @@ export const logIn: APIGatewayProxyHandlerV2 = async (event, context) => {
     return errorHandler(e);
   }
 }
+
+export const uploadDefaultUsers: APIGatewayProxyHandlerV2 = async (event, context) => {
+  console.log(event)
+
+  try {
+    const manager = new AuthorizationManager();
+    const response = await manager.uploadDefaultUsers();
+
+    return createResponse(200, response);
+  } catch (err) {
+    return errorHandler(err);
+  }
+}
+
+export function generateSimpleResponse<C extends APIGatewayAuthorizerSimpleResult['context']>(
+  isAuthorized: boolean,
+  context: C
+  ): APIGatewayAuthorizerSimpleResult & { context: C } {
+
+    const authResponse: APIGatewayAuthorizerSimpleResult & { context: C } = {
+      isAuthorized,
+      context,
+    };
+  
+    return authResponse;
+}
+
+export const authenticate: Handler<
+  APIGatewayRequestAuthorizerHttpApiPayloadV2Event,
+  APIGatewayAuthorizerSimpleResult
+  > = async (event, context) => {
+  console.log(event);
+
+  try {
+    const manager = new AuthorizationManager();
+    const token = event.identitySource?.[0]
+
+    console.log('token', token);
+    const user = await manager.authenticate(token!) as jwtToken;
+  
+    return generateSimpleResponse(true, {email: user.email});
+  } catch (err) {
+    return generateSimpleResponse(false, {});
+  }
+}
+
 

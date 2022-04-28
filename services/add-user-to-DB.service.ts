@@ -25,8 +25,10 @@ export async function addNewUser(userData?: UserData) {
         for (const email in validUsers) {
           console.log('user email: ', email);
           console.log('user password: ', validUsers[email]);
-          await createUserInDB(email, validUsers[email])
+          const user = await createUserInDB(email, validUsers[email])
+          console.log(user);
         }
+        return;
     }        
   } catch(err) {
     throw new HttpInternalServerError('Ошибка добавления пользователя')
@@ -41,7 +43,7 @@ async function createUserInDB(email:string, password:string) {
       const hashedData = await hashPassword(password);
       const newUser: UserData = await User.create({email: email, password: hashedData.salt + hashedData.password, salt: hashedData.salt});
 
-      return true;
+      return newUser;
     } 
 
     return false;

@@ -1,4 +1,4 @@
-import { connectToDB } from "@services/connect-to-DB.service";
+import { connectToDB, addDefaultUserData } from "@services/connect-to-DB.service";
 import { ObjectId } from "mongodb";
 import { ResponseObject } from "./gallery.inteface";
 import { getArrayLength } from "@services/count-images.service";
@@ -57,7 +57,7 @@ export class GalleryService {
     const userId: ObjectId = await getId(userEmail);
 
     try {
-      await connectToDB;
+      await connectToDB();
 
       const allImagesNumber = await getArrayLength(userId, filter);
       const total = await getTotal(limitNumber, allImagesNumber);
@@ -88,7 +88,7 @@ export class GalleryService {
     const userId: ObjectId = await getId(userEmail);
 
     try {
-      await connectToDB;
+      await connectToDB();
       
       const fileName = await saveImageLocal(userId, image);
       await saveImagesToDB(fileName, userId);
