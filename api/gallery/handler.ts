@@ -7,11 +7,13 @@ import { QueryParameters } from './gallery.inteface';
 import { GalleryManager } from './gallery.manager';
 import { MultipartRequest } from 'lambda-multipart-parser';
 import * as parser from 'lambda-multipart-parser';
-// import { createResponse } from '@helper/http-api/response';
-// import { MediaInfoCurlService } from '@services/media-info-curl.service';
-// import { MediaInfoUrl } from './media-info.inteface';
-// import { MediaInfoManager } from './media-info.manager';
 // import { Handler } from 'aws-lambda/handler';
+import { 
+  HttpBadRequestError,
+  HttpUnauthorizedError,
+  HttpInternalServerError,
+  AlreadyExistsError
+ } from '@floteam/errors';
 
 /**
  * It's required if you use any external executable files like mediainfo-curl
@@ -53,7 +55,7 @@ export const getGallery: APIGatewayProxyHandlerV2 = async (event, context) => {
 
     return createResponse(200, result);
   } catch (e) {
-    return errorHandler(e);
+    return errorHandler(e)
   }
 };
 
@@ -69,6 +71,6 @@ export const addImageGallery: APIGatewayProxyHandler = async (event) => {
 
     return createResponse(200, result);
   } catch (e) {
-    return errorHandler(e);
+    return errorHandler(e)
   }
 };

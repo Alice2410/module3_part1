@@ -5,6 +5,12 @@ import { ObjectId } from "mongodb";
 import { Response } from "express";
 import { saveImagesToDB } from './save-images-to-DB';
 import { MultipartFile, MultipartRequest } from 'lambda-multipart-parser';
+import { 
+  HttpBadRequestError,
+  HttpUnauthorizedError,
+  HttpInternalServerError,
+  AlreadyExistsError
+ } from '@floteam/errors';
 
 export const pathToImgDir = config.IMAGES_PATH;
 
@@ -21,7 +27,7 @@ export async function saveImageLocal(userId: ObjectId, file: MultipartFile) {
 
     return fileName;
   } catch(e) {
-
+    throw new HttpInternalServerError(e.message)
   }
 
   // file.mv((config.IMAGES_PATH + newFileName), async (err: Error) => {

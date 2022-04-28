@@ -6,13 +6,19 @@ import {
   APIGatewayTokenAuthorizerWithContextHandler
 } from "aws-lambda";
 import { AuthorizationManager } from './auth.manager';
+import { 
+  HttpBadRequestError,
+  HttpUnauthorizedError,
+  HttpInternalServerError,
+  AlreadyExistsError
+ } from '@floteam/errors';
+
 
 export const signUp: APIGatewayProxyHandlerV2 = async(event, context) => {
   try {
     const manager = new AuthorizationManager();
-  
     if (!event.body) {
-      throw new Error('Нет пользовательских данных')
+      throw new HttpUnauthorizedError('Нет пользовательских данных')
     } 
     const response = await manager.signUp(event.body);
 
@@ -28,7 +34,7 @@ export const logIn: APIGatewayProxyHandlerV2 = async (event, context) => {
     const manager = new AuthorizationManager();
 
     if (!event.body) {
-      throw new Error('Нет пользовательских данных')
+      throw new HttpUnauthorizedError('Нет пользовательских данных')
     } 
 
     const token = await manager.logIn(event.body);

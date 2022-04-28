@@ -31,7 +31,7 @@ export class AuthorizationManager {
 
   logIn (userData: string) {
     const userObject = this.validateUserData(userData, false);
-    
+
     return this.service.logIn(userObject);
   }
 }

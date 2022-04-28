@@ -2,6 +2,12 @@ import { UserData } from "../api/auth/auth.interface";
 import { validUsers } from "@helper/valid-users";
 import { User } from "@models/MongoDB/user";
 import { hashPassword } from "./password-operations.service";
+import { 
+  HttpBadRequestError,
+  HttpUnauthorizedError,
+  HttpInternalServerError,
+  AlreadyExistsError
+ } from '@floteam/errors';
 
 export async function addNewUser(userData?: UserData) {
     
@@ -23,22 +29,24 @@ export async function addNewUser(userData?: UserData) {
         }
     }        
   } catch(err) {
-    let error = err as Error;
-    console.log(error.message);
+    throw new HttpInternalServerError('Ошибка добавления пользователя')
   }
 }
 
 async function createUserInDB(email:string, password:string) {
+  try{
+    let userIsExist = await User.exists({email: email});
 
-  let userIsExist = await User.exists({email: email});
+    if(!userIsExist) {
+      const hashedData = await hashPassword(password);
+      const newUser: UserData = await User.create({email: email, password: hashedData.salt + hashedData.password, salt: hashedData.salt});
 
-  if(!userIsExist) {
-    const hashedData = await hashPassword(password);
-    const newUser: UserData = await User.create({email: email, password: hashedData.salt + hashedData.password, salt: hashedData.salt});
-    
-    return true;
+      return true;
+    } 
+
+    return false;
+  } catch(e) {
+    throw new HttpInternalServerError(e.message)
   }
-
-  return false;
 }
 

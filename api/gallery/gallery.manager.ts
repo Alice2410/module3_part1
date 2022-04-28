@@ -1,11 +1,16 @@
 // import { MediaInfoCurlService, Track } from '@services/media-info-curl.service';
-import { HttpBadRequestError } from '@floteam/errors';
 // import { MediaInfoService } from './media-info.service';
 // import { ObjectId } from "mongodb";
 import { QueryParameters } from './gallery.inteface';
 import { ResponseObject } from './gallery.inteface';
 import { GalleryService } from './gallery.service';
 import { MultipartRequest } from 'lambda-multipart-parser';
+import { 
+  HttpBadRequestError,
+  HttpUnauthorizedError,
+  HttpInternalServerError,
+  AlreadyExistsError
+ } from '@floteam/errors';
 /**
  * It's the feature manager
  * Its methods should implement some feature's functionality

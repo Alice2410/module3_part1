@@ -1,5 +1,3 @@
-import { HttpBadRequestError, HttpInternalServerError } from '@floteam/errors';
-// import { MediaInfoCurlService, Track } from '@services/media-info-curl.service';
 import { connectToDB } from "@services/connect-to-DB.service";
 import { ObjectId } from "mongodb";
 import { ResponseObject } from "./gallery.inteface";
@@ -7,10 +5,16 @@ import { getArrayLength } from "@services/count-images.service";
 import { checkPage } from "@services/check-page.service";
 import { getImages } from "@services/get-images-for-page.service";
 import { getId } from '@services/get-id.services';
-import { MultipartFile, MultipartRequest } from 'lambda-multipart-parser';
-import { Image } from '@models/MongoDB/image';
+import { MultipartFile } from 'lambda-multipart-parser';
 import { saveImageLocal } from '@services/get-image-name';
 import { saveImagesToDB } from '@services/save-images-to-DB';
+import { 
+  HttpBadRequestError,
+  HttpUnauthorizedError,
+  HttpInternalServerError,
+  AlreadyExistsError
+ } from '@floteam/errors';
+ import { getTotal } from "@services/get-total.service";
 
 /**
  * It's the feature service

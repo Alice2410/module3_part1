@@ -1,6 +1,12 @@
 import { UserData } from "../api/auth/auth.interface";
 import { User } from "@models/MongoDB/user";
 import { comparePasswords } from "./password-operations.service";
+import { 
+    HttpBadRequestError,
+    HttpUnauthorizedError,
+    HttpInternalServerError,
+    AlreadyExistsError
+   } from '@floteam/errors';
 
 export async function checkUser(userCred: UserData) {
   const email = userCred.email;
@@ -11,7 +17,6 @@ export async function checkUser(userCred: UserData) {
 
     if(userIsExist) {
         const userData = await User.findOne({email: email}) as UserData;
-
         const validPassword = userData.password;
         const userSalt = userData.salt;
         const isValid = await comparePasswords(password, validPassword, userSalt);
@@ -21,7 +26,6 @@ export async function checkUser(userCred: UserData) {
 
     return false;
 } catch(err) {
-    let error = err as Error;
-    console.log(error.message)
+    throw new HttpInternalServerError('Ошибка проверки существования пользователя')
 }
 }
