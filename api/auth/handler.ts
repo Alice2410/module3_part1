@@ -16,9 +16,8 @@ import {
  } from '@floteam/errors';
  import { APIGatewayAuthorizerSimpleResult, APIGatewayRequestAuthorizerHttpApiPayloadV2Event } from "@interfaces/api-gateway-authorizer.interface";
 
-
 export const signUp: APIGatewayProxyHandlerV2 = async(event, context) => {
-  try {
+  try { 
     const manager = new AuthorizationManager();
     if (!event.body) {
       throw new HttpUnauthorizedError('Нет пользовательских данных')
@@ -49,7 +48,8 @@ export const logIn: APIGatewayProxyHandlerV2 = async (event, context) => {
 }
 
 export const uploadDefaultUsers: APIGatewayProxyHandlerV2 = async (event, context) => {
-  console.log(event)
+  console.log('upload');
+  
 
   try {
     const manager = new AuthorizationManager();

@@ -9,6 +9,7 @@ import {
 export async function addNewUser(userData?: UserData) {
     
   try {
+    
     if (userData) {
       let email = userData.email;
       let password = userData.password;
@@ -17,7 +18,7 @@ export async function addNewUser(userData?: UserData) {
       return result;
         
     } else {
-        for (const email in validUsers) {
+        for (const email in validUsers) {  
           const user = await createUserInDB(email, validUsers[email])
         }
         return;
@@ -32,14 +33,17 @@ async function createUserInDB(email:string, password:string) {
     let userIsExist = await User.exists({email: email});
 
     if(!userIsExist) {
+      
       const hashedData = await hashPassword(password);
+      
       const newUser: UserData = await User.create({email: email, password: hashedData.salt + hashedData.password, salt: hashedData.salt});
-
+      
       return newUser;
     } 
 
     return false;
   } catch(e) {
+   
     throw new HttpInternalServerError(e.message)
   }
 }
