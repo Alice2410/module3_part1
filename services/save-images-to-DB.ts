@@ -4,35 +4,29 @@ import { getMetadata } from './get-metadata.services';
 import { Image } from '@models/MongoDB/image';
 import { getImagesArr } from './get-paths.services';
 import { 
-  HttpBadRequestError,
-  HttpUnauthorizedError,
   HttpInternalServerError,
-  AlreadyExistsError
  } from '@floteam/errors';
 
 export async function saveImagesToDB(path?: string, userID?: ObjectId) {
   try {
-    let imagesPathsArr = await getImagesArr();
-    if( path && userID) {
-      let owner = userID;
-      let result = await addImage(path, owner);
-
-      console.log(result);
-    } else {
+    const imagesPathsArr = await getImagesArr();
     
+    if( path && userID) {
+      const owner = userID;
+      const result = await addImage(path, owner);
+    } else {
+
       for(const imgPath of imagesPathsArr) {
-          let imageIsExist = await Image.exists({path: imgPath});
-
-          if(!imageIsExist) {
-              try{
-
-                let image = await addImage(imgPath);
-                  
-              } catch(err) {
-                  let error = err as Error;
-                  console.log(error.message)
-              }
+          const imageIsExist = await Image.exists({path: imgPath});
+  
+        if(!imageIsExist) {
+          try{
+            const image = await addImage(imgPath);
+          } catch(err) {
+              let error = err as Error;
+              console.log(error.message)
           }
+        }
       }
     }
   } catch(e) {
@@ -41,13 +35,12 @@ export async function saveImagesToDB(path?: string, userID?: ObjectId) {
 }
 
 async function addImage (imagePath: string, owner?: ObjectId) {
-  try {
-    let metadata = await getMetadata(imagePath);
-    let image: ImageInterface = await Image.create({path: imagePath, metadata: metadata, owner: owner ?? null});
-
+  try { 
+    const metadata = await getMetadata(imagePath);
+    const image: ImageInterface = await Image.create({path: imagePath, metadata: metadata, owner: owner ?? null});
+    
     return image;
   } catch(e) {
     throw new HttpInternalServerError(e.message)
   }
-  
 }

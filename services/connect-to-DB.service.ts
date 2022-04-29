@@ -1,13 +1,8 @@
 import { getEnv } from '@helper/environment';
 import { log } from '@helper/logger';
 import mongoose from 'mongoose';
-import { path } from './get-paths.services';
-import { saveImagesToDB } from './save-images-to-DB';
 import { 
-  HttpBadRequestError,
-  HttpUnauthorizedError,
   HttpInternalServerError,
-  AlreadyExistsError
  } from '@floteam/errors';
 import { addNewUser } from './add-user-to-DB.service';
 
@@ -26,7 +21,6 @@ export async function addDefaultUserData() {
       log('Connection to DB is successfully established.');
 
       await addNewUser();
-      // await saveImagesToDB(path);
     });
 
   } catch(e) {
@@ -36,8 +30,9 @@ export async function addDefaultUserData() {
 
 export async function connectToDB() {
   try {
+    console.log('CONNECTED');
     const connection = await mongoose.connect(dbURL);
-    console.log('connected to db');
+    
   } catch(e) {
     throw new HttpInternalServerError('Ошибка подключения к базе данных')
   }

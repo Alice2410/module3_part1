@@ -1,11 +1,8 @@
 import { ObjectId } from "mongodb";
 import { Image } from '@models/MongoDB/image';
 import { 
-  HttpBadRequestError,
-  HttpUnauthorizedError,
   HttpInternalServerError,
-  AlreadyExistsError
- } from '@floteam/errors';
+} from '@floteam/errors';
 
 export async function getImages(filter: string, page: number, limit: number, id: ObjectId) { 
   try {

@@ -2,10 +2,7 @@ import { UserData } from "../api/auth/auth.interface";
 import { User } from "@models/MongoDB/user";
 import { comparePasswords } from "./password-operations.service";
 import { 
-    HttpBadRequestError,
-    HttpUnauthorizedError,
     HttpInternalServerError,
-    AlreadyExistsError
    } from '@floteam/errors';
 
 export async function checkUser(userCred: UserData) {

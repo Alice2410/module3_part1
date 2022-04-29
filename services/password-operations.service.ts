@@ -24,15 +24,14 @@ export async function hashPassword (password: string) {
   } catch(e) {
     throw new HttpInternalServerError('Ошибка хэширования')
   }
-  
 }
 
 export async function comparePasswords (password: string, correctData: string, salt: string) {
   try{
     const hashedUserPassword = await scryptAsync(password, salt, 64);
-  const isValid = (salt + hashedUserPassword.toString('hex')) === correctData;
+    const isValid = (salt + hashedUserPassword.toString('hex')) === correctData;
 
-  return isValid;
+    return isValid;
   } catch(e) {
     throw new HttpInternalServerError(e.message)
   }

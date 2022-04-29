@@ -1,10 +1,9 @@
 import { UserData } from "./auth.interface";
-import { addDefaultUserData, connectToDB } from "@services/connect-to-DB.service";
+import { connectToDB } from "@services/connect-to-DB.service";
 import { addNewUser } from "@services/add-user-to-DB.service";
 import { checkUser } from "@services/check-user-data.service";
 import jwt from "jsonwebtoken";
 import { 
-  HttpBadRequestError,
   HttpUnauthorizedError,
   HttpInternalServerError,
   AlreadyExistsError
@@ -20,8 +19,7 @@ export class AuthorizationService {
       if (!newUser) {
         throw new AlreadyExistsError('Пользователь существует')
       }
-      console.log(newUser);
-
+      
       return true;
     } catch(e) {
       throw new AlreadyExistsError('Новый пользователь не добавлен')
@@ -49,10 +47,8 @@ export class AuthorizationService {
   async uploadDefaultUsers () {
     try {
       await connectToDB();
-
       let user = await addNewUser();
-      console.log(user);
-
+      
       return 'Пользователи добавлены';
     } catch (err) {
       throw new HttpInternalServerError('Пользователи не были добавлены');
@@ -61,7 +57,7 @@ export class AuthorizationService {
 
   async authenticate(token: string) {
     try {
-      await connectToDB;
+      await connectToDB();
 
       return jwt.verify(token, tokenKey);
     } catch (err) {

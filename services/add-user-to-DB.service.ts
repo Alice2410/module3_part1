@@ -3,17 +3,13 @@ import { validUsers } from "@helper/valid-users";
 import { User } from "@models/MongoDB/user";
 import { hashPassword } from "./password-operations.service";
 import { 
-  HttpBadRequestError,
-  HttpUnauthorizedError,
   HttpInternalServerError,
-  AlreadyExistsError
  } from '@floteam/errors';
 
 export async function addNewUser(userData?: UserData) {
     
   try {
     if (userData) {
-      console.log('has userData')
       let email = userData.email;
       let password = userData.password;
       let result = await createUserInDB(email, password);
@@ -21,12 +17,8 @@ export async function addNewUser(userData?: UserData) {
       return result;
         
     } else {
-        console.log('adding default users')
         for (const email in validUsers) {
-          console.log('user email: ', email);
-          console.log('user password: ', validUsers[email]);
           const user = await createUserInDB(email, validUsers[email])
-          console.log(user);
         }
         return;
     }        

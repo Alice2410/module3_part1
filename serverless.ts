@@ -1,4 +1,5 @@
 import type { AWS } from '@serverless/typescript';
+import { galleryConfig } from './config/serverless/parts/galleryConf/gallery';
 import { authConfig } from './config/serverless/parts/authConf/auth';
 // import { examplesConfig } from './config/serverless/parts/examples';
 // import { getMediaInfoConfig } from './config/serverless/parts/get-media-info';
@@ -142,5 +143,6 @@ module.exports = joinParts(masterConfig, [
   // jobsConfig,
   // usersConfig,
   // examplesConfig,
-  authConfig
+  authConfig,
+  galleryConfig
 ]);

@@ -1,10 +1,10 @@
 import * as fs from "fs";
 import * as path from "path";
+import { IMAGES_PATH } from "./config";
 
 export async function getMetadata(imageName: string){
-    
-    let imgPath = path.join(__dirname, '../images/', imageName);
-    let metadata = await fs.promises.stat(imgPath);
+    const imgPath = path.join(IMAGES_PATH, imageName);
+    const metadata = await fs.promises.stat(imgPath);
     
     return metadata;
 }

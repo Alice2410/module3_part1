@@ -3,8 +3,6 @@ import { AuthorizationService } from "./auth.service";
 import { 
   HttpBadRequestError,
   HttpUnauthorizedError,
-  HttpInternalServerError,
-  AlreadyExistsError
  } from '@floteam/errors';
 
 export class AuthorizationManager {
@@ -40,11 +38,11 @@ export class AuthorizationManager {
     return this.service.logIn(userObject);
   }
 
-  uploadDefaultUsers = async () => {
+  async uploadDefaultUsers() {
     return this.service.uploadDefaultUsers();
   }
 
-  authenticate = async (token: string) => {
+  async authenticate(token: string) {
     if (!token) {
       throw new HttpUnauthorizedError('Токен не найден')
     }

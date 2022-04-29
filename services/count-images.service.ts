@@ -1,10 +1,7 @@
 import { Image } from '@models/MongoDB/image';
 import { ObjectId } from "mongodb";
 import { 
-  HttpBadRequestError,
-  HttpUnauthorizedError,
   HttpInternalServerError,
-  AlreadyExistsError
  } from '@floteam/errors';
 
 

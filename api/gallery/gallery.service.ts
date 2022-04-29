@@ -1,4 +1,4 @@
-import { connectToDB, addDefaultUserData } from "@services/connect-to-DB.service";
+import { connectToDB } from "@services/connect-to-DB.service";
 import { ObjectId } from "mongodb";
 import { ResponseObject } from "./gallery.inteface";
 import { getArrayLength } from "@services/count-images.service";
@@ -10,41 +10,10 @@ import { saveImageLocal } from '@services/get-image-name';
 import { saveImagesToDB } from '@services/save-images-to-DB';
 import { 
   HttpBadRequestError,
-  HttpUnauthorizedError,
   HttpInternalServerError,
-  AlreadyExistsError
  } from '@floteam/errors';
  import { getTotal } from "@services/get-total.service";
-
-/**
- * It's the feature service
- * Its methods should implement one of the main steps of some feature's functionality
- */
-// export class MediaInfoService {
-//   /**
-//    * This method implements one of the main steps of some feature's functionality
-//    * @param url - required data
-//    * @param mediaInfoCurlService - required services
-//    */
-//   async getMediaInfo(url: string, mediaInfoCurlService: MediaInfoCurlService): Promise<Track> {
-//     /**
-//      * Try to catch unexpected errors
-//      */
-//     let mediaInfo: Track | undefined;
-//     try {
-//       mediaInfo = await mediaInfoCurlService.getMediaInfo(url);
-//     } catch (e) {
-//       throw new HttpInternalServerError(e.message);
-//     }
-//     /**
-//      * If !mediaInfo it means that the URL is broken or doesn't have access
-//      */
-//     if (!mediaInfo) {
-//       throw new HttpBadRequestError("Can't extract media info. Please, check your URL");
-//     }
-//     return mediaInfo;
-//   }
-// }
+ import { path } from "@services/get-paths.services";
 
 export class GalleryService {
   async getImages(pageNumber: number, limitNumber: number, filter: string, userEmail: string) {
@@ -53,12 +22,10 @@ export class GalleryService {
       page: 0,
       total: 0,
     }
-
-    const userId: ObjectId = await getId(userEmail);
-
+    
     try {
       await connectToDB();
-
+      const userId: ObjectId = await getId(userEmail);
       const allImagesNumber = await getArrayLength(userId, filter);
       const total = await getTotal(limitNumber, allImagesNumber);
       const page = checkPage(pageNumber, total);
@@ -71,7 +38,6 @@ export class GalleryService {
         responseGalleryObj.total = total;
 
         return responseGalleryObj;
-
       } else {
         throw new HttpBadRequestError(`Страницы не существует`)
       }
@@ -85,12 +51,10 @@ export class GalleryService {
   }
 
   async uploadImage(image: MultipartFile, userEmail: string) {
-    const userId: ObjectId = await getId(userEmail);
-
     try {
       await connectToDB();
-      
-      const fileName = await saveImageLocal(userId, image);
+      const userId: ObjectId = await getId(userEmail);
+      const fileName = await saveImageLocal(image);
       await saveImagesToDB(fileName, userId);
 
     } catch (e) {
@@ -98,5 +62,16 @@ export class GalleryService {
     }
 
     return 'Изображение загружено';
+  }
+
+  async uploadDefaultImages () {
+    try {
+      await connectToDB();
+      const image = await saveImagesToDB(path);
+
+      return 'Картинки добавлены';
+    } catch (err) {
+      throw new HttpInternalServerError('Картинки не были добавлены');
+    }
   }
 }

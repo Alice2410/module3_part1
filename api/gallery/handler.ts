@@ -7,17 +7,7 @@ import { QueryParameters } from './gallery.inteface';
 import { GalleryManager } from './gallery.manager';
 import { MultipartRequest } from 'lambda-multipart-parser';
 import * as parser from 'lambda-multipart-parser';
-// import { Handler } from 'aws-lambda/handler';
-import { 
-  HttpBadRequestError,
-  HttpUnauthorizedError,
-  HttpInternalServerError,
-  AlreadyExistsError
- } from '@floteam/errors';
 
-/**
- * It's required if you use any external executable files like mediainfo-curl
- */
 if (process.env.LAMBDA_TASK_ROOT) {
   process.env.PATH = `${process.env.PATH}:${process.env.LAMBDA_TASK_ROOT}/bin`;
 }
@@ -50,7 +40,7 @@ export const getGallery: APIGatewayProxyHandlerV2 = async (event, context) => {
   try {
     const manager = new GalleryManager();
     const queryParams = event.queryStringParameters as unknown as QueryParameters;
-    const userEmail = event.requestContext.authorizer?.jwt.claims.email as string;
+    const userEmail = event.requestContext.authorizer?.jwt.claims.sub as string;
     const result = await manager.getImages(queryParams, userEmail);
 
     return createResponse(200, result);
@@ -60,13 +50,10 @@ export const getGallery: APIGatewayProxyHandlerV2 = async (event, context) => {
 };
 
 export const addImageGallery: APIGatewayProxyHandler = async (event) => {
-  log(event);
-
   try {
     const manager = new GalleryManager();
     const images: MultipartRequest = await parser.parse(event);
-    const ownerEmail: string = event.requestContext.authorizer?.claims.email;
-
+    const ownerEmail: string = event.requestContext.authorizer?.jwt.claims.sub;
     const result = await manager.uploadImages(images, ownerEmail);
 
     return createResponse(200, result);
@@ -74,3 +61,14 @@ export const addImageGallery: APIGatewayProxyHandler = async (event) => {
     return errorHandler(e)
   }
 };
+
+export const uploadDefaultImages: APIGatewayProxyHandlerV2 = async (event, context) => {
+  try {
+    const manager = new GalleryManager();
+    const response = await manager.uploadDefaultImages();
+
+    return createResponse(200, response);
+  } catch (err) {
+    return errorHandler(err);
+  }
+}
