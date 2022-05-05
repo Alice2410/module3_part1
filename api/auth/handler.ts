@@ -1,19 +1,14 @@
 import { errorHandler } from '@helper/http-api/error-handler';
 import { createResponse } from '@helper/http-api/response';
 import {
-  APIGatewayAuthorizerResult,
   APIGatewayProxyHandlerV2,
-  APIGatewayTokenAuthorizerWithContextHandler,
   Handler
 } from "aws-lambda";
 import { AuthorizationManager } from './auth.manager';
 import { jwtToken } from './auth.interface';
 import { 
-  HttpBadRequestError,
   HttpUnauthorizedError,
-  HttpInternalServerError,
-  AlreadyExistsError
- } from '@floteam/errors';
+} from '@floteam/errors';
  import { APIGatewayAuthorizerSimpleResult, APIGatewayRequestAuthorizerHttpApiPayloadV2Event } from "@interfaces/api-gateway-authorizer.interface";
 
 export const signUp: APIGatewayProxyHandlerV2 = async(event, context) => {
@@ -78,7 +73,6 @@ export const authenticate: Handler<
   APIGatewayRequestAuthorizerHttpApiPayloadV2Event,
   APIGatewayAuthorizerSimpleResult
   > = async (event, context) => {
-  console.log(event);
 
   try {
     const manager = new AuthorizationManager();

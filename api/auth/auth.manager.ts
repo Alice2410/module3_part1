@@ -43,7 +43,9 @@ export class AuthorizationManager {
   }
 
   async authenticate(token: string) {
+    
     if (!token) {
+      
       throw new HttpUnauthorizedError('Токен не найден')
     }
 

@@ -4,9 +4,10 @@ import mongoose from 'mongoose';
 import { 
   HttpInternalServerError,
  } from '@floteam/errors';
-import { addNewUser } from './add-user-to-DB.service';
+import { UserService } from '@models/MongoDB/user-operations';
 
 const dbURL = getEnv('DB_CONN', true);
+const User = new UserService();
 
 export async function addDefaultUserData() {
   try {
@@ -20,7 +21,7 @@ export async function addDefaultUserData() {
     isConnected.on('open', async () => {
       log('Connection to DB is successfully established.');
 
-      await addNewUser();
+      await User.addNewUser();
     });
 
   } catch(e) {

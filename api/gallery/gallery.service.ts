@@ -1,19 +1,21 @@
-import { connectToDB } from "@services/connect-to-DB.service";
 import { ObjectId } from "mongodb";
+import path from "path";
+import fs from "fs";
+import * as config from "../../services/config";
+import { connectToDB } from "@services/connect-to-DB.service";
 import { ResponseObject } from "./gallery.inteface";
-import { getArrayLength } from "@services/count-images.service";
-import { checkPage } from "@services/check-page.service";
-import { getImages } from "@services/get-images-for-page.service";
-import { getId } from '@services/get-id.services';
 import { MultipartFile } from 'lambda-multipart-parser';
-import { saveImageLocal } from '@services/get-image-name';
-import { saveImagesToDB } from '@services/save-images-to-DB';
+import { ImageService } from "@models/MongoDB/image-operations";
+import { UserService } from "@models/MongoDB/user-operations";
 import { 
   HttpBadRequestError,
   HttpInternalServerError,
  } from '@floteam/errors';
- import { getTotal } from "@services/get-total.service";
- import { path } from "@services/get-paths.services";
+
+const User = new UserService();
+const Image = new ImageService();
+
+export const pathToImgDir = config.IMAGES_PATH;
 
 export class GalleryService {
   async getImages(pageNumber: number, limitNumber: number, filter: string, userEmail: string) {
@@ -25,13 +27,13 @@ export class GalleryService {
     
     try {
       await connectToDB();
-      const userId: ObjectId = await getId(userEmail);
-      const allImagesNumber = await getArrayLength(userId, filter);
-      const total = await getTotal(limitNumber, allImagesNumber);
-      const page = checkPage(pageNumber, total);
+      const userId: ObjectId = await User.getId(userEmail);
+      const allImagesNumber = await Image.getArrayLength(userId, filter);
+      const total = await getTotalPages(limitNumber, allImagesNumber);
+      const page = checkPageNumber(pageNumber, total);
 
       if (page) {
-        const objects = await getImages(filter, page, limitNumber, userId)
+        const objects = await Image.getImages(filter, page, limitNumber, userId)
 
         responseGalleryObj.objects = objects;
         responseGalleryObj.page = page;
@@ -53,9 +55,9 @@ export class GalleryService {
   async uploadImage(image: MultipartFile, userEmail: string) {
     try {
       await connectToDB();
-      const userId: ObjectId = await getId(userEmail);
+      const userId: ObjectId = await User.getId(userEmail);
       const fileName = await saveImageLocal(image);
-      await saveImagesToDB(fileName, userId);
+      await Image.addImage(fileName, userId);
 
     } catch (e) {
       throw new HttpInternalServerError(e.message);
@@ -67,7 +69,7 @@ export class GalleryService {
   async uploadDefaultImages () {
     try {
       await connectToDB();
-      const image = await saveImagesToDB(path);
+      const image = await Image.saveImagesToDB();
 
       return 'Картинки добавлены';
     } catch (err) {
@@ -75,3 +77,30 @@ export class GalleryService {
     }
   }
 }
+
+function checkPageNumber(pageNumber: number, total: number) {
+  return ((pageNumber > 0) && (pageNumber <= total)) ? pageNumber : false;
+}
+
+async function getTotalPages(limit: number, imagesNumber: number) {
+         
+  return Math.ceil(imagesNumber / limit);
+}
+
+async function saveImageLocal(file: MultipartFile) {
+  let fileName = file.filename;
+  let noSpaceFileName = fileName.replace(/\s/g, '');
+  let newFileName = 'user' + '_' +  noSpaceFileName;
+
+  try {
+    await fs.promises.writeFile(
+      path.join(pathToImgDir, newFileName),
+      file.content
+    );
+
+    return newFileName;
+  } catch(e) {
+    throw new HttpInternalServerError(e.message)
+  }
+}
+
