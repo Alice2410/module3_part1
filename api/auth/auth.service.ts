@@ -1,7 +1,8 @@
 import { UserData } from "./auth.interface";
 import { connectToDB } from "@services/connect-to-DB.service";
-import { addNewUser } from "@services/add-user-to-DB.service";
-import { checkUser } from "@services/check-user-data.service";
+// import { addNewUser } from "@services/add-user-to-DB.service";
+// import { checkUser } from "@services/check-user-data.service";
+import { UserService } from "@models/MongoDB/user-operations";
 import jwt from "jsonwebtoken";
 import { 
   HttpUnauthorizedError,
@@ -11,11 +12,14 @@ import {
 
 const tokenKey = process.env.TOKEN_KEY as string;
 
+
 export class AuthorizationService {
+  User = new UserService();
+
   async signUp(userData: UserData) {
     try {
       await connectToDB();
-      const newUser = await addNewUser(userData);
+      const newUser = await this.User.addNewUser(userData);
       if (!newUser) {
         throw new AlreadyExistsError('Пользователь существует')
       }
@@ -29,7 +33,7 @@ export class AuthorizationService {
   async logIn(userData: UserData) {
     try {
       await connectToDB();
-      const isValid = await checkUser(userData);
+      const isValid = await this.User.checkUser(userData);
 
       if (isValid) {
         
@@ -47,7 +51,7 @@ export class AuthorizationService {
   async uploadDefaultUsers () {
     try {
       await connectToDB();
-      let user = await addNewUser();
+      let user = await this.User.addNewUser();
       
       return 'Пользователи добавлены';
     } catch (err) {
