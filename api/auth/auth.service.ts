@@ -22,7 +22,7 @@ export class AuthorizationService {
       
       return true;
     } catch(e) {
-      throw new AlreadyExistsError('Новый пользователь не добавлен')
+      throw new HttpInternalServerError('Новый пользователь не добавлен')
     }
   }
 
