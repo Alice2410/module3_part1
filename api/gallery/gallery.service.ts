@@ -29,8 +29,8 @@ export class GalleryService {
       await connectToDB();
       const userId: ObjectId = await User.getId(userEmail);
       const allImagesNumber = await Image.getArrayLength(userId, filter);
-      const total = await getTotal(limitNumber, allImagesNumber);
-      const page = checkPage(pageNumber, total);
+      const total = await getTotalPages(limitNumber, allImagesNumber);
+      const page = checkPageNumber(pageNumber, total);
 
       if (page) {
         const objects = await Image.getImages(filter, page, limitNumber, userId)
@@ -78,11 +78,11 @@ export class GalleryService {
   }
 }
 
-function checkPage(pageNumber: number, total: number) {
+function checkPageNumber(pageNumber: number, total: number) {
   return ((pageNumber > 0) && (pageNumber <= total)) ? pageNumber : false;
 }
 
-async function getTotal(limit: number, imagesNumber: number) {
+async function getTotalPages(limit: number, imagesNumber: number) {
          
   return Math.ceil(imagesNumber / limit);
 }
