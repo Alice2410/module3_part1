@@ -9,7 +9,7 @@ export const getGallery =  {
         path: '/gallery',
         method: 'get',
         authorizer: {
-          name: 'authenticator'
+          name: 'authenticate'
         },
       },
     },
@@ -27,7 +27,7 @@ export const addImageGallery = {
         path: '/gallery/upload-new',
         method: 'post',
         authorizer: {
-          name: 'authenticator'
+          name: 'authenticate'
         },
       },
     },

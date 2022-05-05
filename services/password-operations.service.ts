@@ -2,11 +2,8 @@ import { HashedPassword } from "../api/auth/auth.interface";
 import crypto from 'crypto';
 import { promisify } from "util";
 import { 
-  HttpBadRequestError,
-  HttpUnauthorizedError,
-  HttpInternalServerError,
-  AlreadyExistsError
- } from '@floteam/errors';
+  HttpInternalServerError
+} from '@floteam/errors';
 
 const scryptAsync = promisify< crypto.BinaryLike,  crypto.BinaryLike, number, Buffer>(crypto.scrypt);
 
@@ -28,6 +25,7 @@ export async function hashPassword (password: string) {
 
 export async function comparePasswords (password: string, correctData: string, salt: string) {
   try{
+    
     const hashedUserPassword = await scryptAsync(password, salt, 64);
     const isValid = (salt + hashedUserPassword.toString('hex')) === correctData;
 

@@ -1,5 +1,5 @@
 import { AWSPartitial } from '../../types';
-import {signUp, logIn, uploadDefaultUsers} from "./index";
+import {signUp, logIn, uploadDefaultUsers, authenticator} from "./index";
 
 export const authConfig: AWSPartitial = {
   provider: {
@@ -15,6 +15,6 @@ export const authConfig: AWSPartitial = {
     }
   },
   functions: {
-    signUp, logIn, uploadDefaultUsers
+    authenticator, signUp, logIn, uploadDefaultUsers
   },
 }

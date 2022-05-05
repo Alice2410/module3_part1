@@ -1,7 +1,5 @@
 import { UserData } from "./auth.interface";
 import { connectToDB } from "@services/connect-to-DB.service";
-// import { addNewUser } from "@services/add-user-to-DB.service";
-// import { checkUser } from "@services/check-user-data.service";
 import { UserService } from "@models/MongoDB/user-operations";
 import jwt from "jsonwebtoken";
 import { 
@@ -62,7 +60,7 @@ export class AuthorizationService {
   async authenticate(token: string) {
     try {
       await connectToDB();
-
+      
       return jwt.verify(token, tokenKey);
     } catch (err) {
       throw new HttpUnauthorizedError('Невалидный токен')
