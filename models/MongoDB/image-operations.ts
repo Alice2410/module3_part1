@@ -11,7 +11,7 @@ import {
 export class ImageService {
   async getArrayLength (id: ObjectId, filter: string) { 
     try {
-      const findFilter = (filter === 'true') ? {'owner': id} : {$or: [{'owner': id}, {'owner': null}]};
+      const findFilter = getImagesFilter(filter, id);
       const imagesNumber = await Image.countDocuments(findFilter);
   
       return imagesNumber;
@@ -22,7 +22,7 @@ export class ImageService {
   
   async getImages(filter: string, page: number, limit: number, id: ObjectId) { 
     try {
-      const findFilter = (filter === 'true') ? {'owner': id} : {$or: [{'owner': id}, {'owner': null}]};
+      const findFilter = getImagesFilter(filter, id);
       const arrForPage = await Image.find(findFilter, null, {skip: limit * page - limit, limit: limit});
   
       return arrForPage as unknown as object[];
@@ -80,4 +80,8 @@ async function getImagesArr() {
     throw new HttpInternalServerError(e.message)
   }
   
+}
+
+function getImagesFilter(filter: string, id: ObjectId) {
+  return (filter === 'true') ? {'owner': id} : {$or: [{'owner': id}, {'owner': null}]}
 }
