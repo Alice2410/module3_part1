@@ -1,14 +1,17 @@
 import type { AWS } from '@serverless/typescript';
-import { examplesConfig } from './config/serverless/parts/examples';
-import { getMediaInfoConfig } from './config/serverless/parts/get-media-info';
-import { jobsConfig } from './config/serverless/parts/jobs';
+import { galleryConfig } from './config/serverless/parts/galleryConf/gallery';
+import { authConfig } from './config/serverless/parts/authConf/auth';
+// import { examplesConfig } from './config/serverless/parts/examples';
+// import { getMediaInfoConfig } from './config/serverless/parts/get-media-info';
+// import { jobsConfig } from './config/serverless/parts/jobs';
 import { restApiCorsConfig } from './config/serverless/parts/rest-api-cors';
-import { usersConfig } from './config/serverless/parts/users';
+// import { usersConfig } from './config/serverless/parts/users';
 import { joinParts } from './config/serverless/utils';
+
 
 const CLIENT = '${file(./env.yml):${self:provider.stage}.CLIENT}';
 const SERVICE_NAME = `template-sls`;
-const STAGE = '${opt:stage, "dev"}';
+const STAGE = '${opt:stage, "local"}';
 const REGION = '${file(./env.yml):${self:provider.stage}.REGION}';
 const PROFILE = '${file(./env.yml):${self:provider.stage}.PROFILE}';
 
@@ -68,9 +71,9 @@ const masterConfig: AWS = {
     envFiles: ['env.yml'],
     envEncryptionKeyId: {
       local: '${file(./kms_key.yml):local}',
-      dev: '${file(./kms_key.yml):dev}',
-      test: '${file(./kms_key.yml):test}',
-      prod: '${file(./kms_key.yml):prod}',
+      // dev: '${file(./kms_key.yml):dev}',
+      // test: '${file(./kms_key.yml):test}',
+      // prod: '${file(./kms_key.yml):prod}',
     },
     'serverless-offline': {
       ignoreJWTSignature: true,
@@ -136,8 +139,10 @@ const masterConfig: AWS = {
 
 module.exports = joinParts(masterConfig, [
   restApiCorsConfig,
-  getMediaInfoConfig,
-  jobsConfig,
-  usersConfig,
-  examplesConfig,
+  // getMediaInfoConfig,
+  // jobsConfig,
+  // usersConfig,
+  // examplesConfig,
+  authConfig,
+  galleryConfig
 ]);

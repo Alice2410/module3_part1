@@ -4,3 +4,4 @@ build
 request_logs.txt
 .env
 storage
+.esbuild
